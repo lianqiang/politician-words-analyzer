@@ -1,0 +1,50 @@
+#!/usr/bin/perl -w
+
+##########################################################
+##########################################################
+my $totdocfreq = 0;
+
+while (<STDIN>) {
+   chop;
+   if ($_ =~ /^[.]I/) {
+      if ($totdocfreq > 0) {
+        &process_doc_freqs;
+      }
+   } 
+   else {
+		 $_ = lc $_;
+     $curdocfreq{$_}++;
+     $totdocfreq++;
+   }
+}
+
+if ($totdocfreq > 0) {
+   &process_doc_freqs;
+}
+
+&print_freqs;
+
+
+
+
+##########################################################
+##########################################################
+
+sub process_doc_freqs {
+
+  while (($term,$freq) = each %curdocfreq) {
+    $corpusfreq{$term}+=$freq;
+  }
+  $totdocfreq = 0;
+  undef %curdocfreq;
+}
+
+sub print_freqs {
+
+	foreach my $term (sort { -1 * ($corpusfreq{$a} <=> $corpusfreq{$b}) } keys %corpusfreq) {
+    printf("%s\t%s\n", $term, $corpusfreq{$term} );
+	}
+
+}  
+
+
